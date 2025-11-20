@@ -1,0 +1,42 @@
+{
+  "name": "nft-marketplace",
+  "version": "1.0.0",
+  "description": "Smart contracts for NFT marketplace with minting, trading, and auction functionality",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test",
+    "compile": "truffle compile",
+    "migrate": "truffle migrate",
+    "migrate:reset": "truffle migrate --reset",
+    "console": "truffle console"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csrikanth05/nft-marketplace.git"
+  },
+  "keywords": [
+    "nft",
+    "marketplace",
+    "ethereum",
+    "solidity",
+    "truffle"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/csrikanth05/nft-marketplace/issues"
+  },
+  "homepage": "https://github.com/csrikanth05/nft-marketplace#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.3",
+    "@truffle/hdwallet-provider": "^2.1.15"
+  },
+  "devDependencies": {
+    "truffle": "^5.11.5",
+    "chai": "^4.3.10",
+    "chai-as-promised": "^7.1.1"
+  }
+}
