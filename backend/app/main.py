@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
 from .routers import nft, marketplace, auction
+from .services.indexer_service import indexer_service
+import asyncio
 
 # Create FastAPI application
 app = FastAPI(
@@ -11,6 +13,11 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+@app.on_event("startup")
+async def startup_event():
+    """Start the blockchain indexer in the background"""
+    asyncio.create_task(indexer_service.sync_events())
 
 # Configure CORS
 app.add_middleware(
