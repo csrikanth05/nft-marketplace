@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     # CORS
     ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:8000"
     
+    # IPFS / Pinata
+    PINATA_JWT: str = ""
+    PINATA_GATEWAY: str = "https://gateway.pinata.cloud/ipfs/"
+    
     @property
     def allowed_origins_list(self) -> List[str]:
         return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",")]
