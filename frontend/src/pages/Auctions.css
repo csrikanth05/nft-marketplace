@@ -1,0 +1,8 @@
+.auctions-page {
+    min-height: calc(100vh - var(--header-height));
+    padding: var(--spacing-2xl) 0;
+}
+
+.auctions-page h1 {
+    margin-bottom: var(--spacing-xl);
+}

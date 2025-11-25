@@ -1,0 +1,315 @@
+.nft-detail-page {
+  min-height: calc(100vh - var(--header-height));
+  padding: var(--spacing-2xl) 0;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: var(--primary-blue);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-sm);
+  transition: opacity var(--transition-fast);
+}
+
+.back-button:hover {
+  opacity: 0.7;
+}
+
+.nft-detail-grid {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: var(--spacing-2xl);
+  margin-top: var(--spacing-xl);
+}
+
+/* Left Column - Image (Smaller) */
+.nft-image-section {
+  position: sticky;
+  top: calc(var(--header-height) + var(--spacing-lg));
+  height: fit-content;
+}
+
+.nft-image-card {
+  padding: 0;
+  overflow: hidden;
+  aspect-ratio: 1;
+  border-radius: var(--radius-lg);
+}
+
+.nft-image-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray-100);
+  color: var(--text-light);
+}
+
+.nft-links {
+  margin-top: var(--spacing-md);
+  text-align: center;
+}
+
+.ipfs-link {
+  color: var(--primary-blue);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  transition: opacity var(--transition-fast);
+}
+
+.ipfs-link:hover {
+  opacity: 0.7;
+}
+
+/* Right Column - Info */
+.nft-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Header with Name and Button */
+.nft-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+}
+
+.header-left {
+  flex: 1;
+}
+
+.collection-name {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--primary-blue);
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nft-header h1 {
+  font-size: 2rem;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Ownership Card */
+.ownership-card {
+  padding: var(--spacing-lg);
+}
+
+.ownership-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-lg);
+}
+
+.owner-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.owner-item .label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.owner-item .value {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Price Card */
+.price-card {
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, var(--light-blue) 0%, white 100%);
+}
+
+.current-price {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.price-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.price-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-blue);
+}
+
+.price-value-small {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-blue);
+}
+
+.owner-notice {
+  text-align: center;
+  padding: var(--spacing-sm);
+  background: var(--gray-100);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* Actions Card */
+.actions-card {
+  padding: var(--spacing-lg);
+}
+
+/* Description */
+.description-card {
+  padding: var(--spacing-lg);
+}
+
+.description-card h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+}
+
+.description-card p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Properties */
+.properties-card {
+  padding: var(--spacing-lg);
+}
+
+.properties-card h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+}
+
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+}
+
+.property-item {
+  background: var(--gray-100);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  text-align: center;
+}
+
+.property-type {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.property-value {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+}
+
+/* Details */
+.details-card {
+  padding: var(--spacing-lg);
+}
+
+.details-card h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.detail-value {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-family: monospace;
+  font-size: var(--font-size-sm);
+}
+
+.detail-link {
+  color: var(--primary-blue);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  transition: opacity var(--transition-fast);
+}
+
+.detail-link:hover {
+  opacity: 0.7;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .nft-detail-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+  }
+
+  .nft-image-section {
+    position: relative;
+    top: 0;
+  }
+
+  .nft-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ownership-info {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .properties-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .properties-grid {
+    grid-template-columns: 1fr;
+  }
+}

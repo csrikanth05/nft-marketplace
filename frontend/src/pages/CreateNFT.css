@@ -1,0 +1,177 @@
+.create-nft-page {
+    min-height: calc(100vh - var(--header-height));
+    padding: var(--spacing-2xl) 0;
+}
+
+.create-nft-page h1 {
+    margin-bottom: var(--spacing-xl);
+}
+
+.create-nft-grid {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: var(--spacing-2xl);
+}
+
+.preview-card {
+    position: sticky;
+    top: calc(var(--header-height) + var(--spacing-lg));
+    height: fit-content;
+}
+
+.preview-card h3 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+}
+
+.image-preview {
+    aspect-ratio: 1;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-placeholder {
+    color: var(--text-light);
+    text-align: center;
+    padding: var(--spacing-lg);
+}
+
+.create-nft-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.form-group small {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="url"],
+.form-group input[type="file"],
+.form-group textarea,
+.form-group select {
+    padding: var(--spacing-sm);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-family: inherit;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+/* Properties Section */
+.property-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+.property-row input {
+    padding: var(--spacing-sm);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+}
+
+.property-row input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+}
+
+.remove-btn {
+    background: var(--error-red);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: opacity var(--transition-fast);
+}
+
+.remove-btn:hover {
+    opacity: 0.8;
+}
+
+.add-property-btn {
+    background: var(--gray-100);
+    color: var(--primary-blue);
+    border: 1px dashed var(--gray-300);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    transition: all var(--transition-fast);
+    margin-top: var(--spacing-xs);
+}
+
+.add-property-btn:hover {
+    background: var(--light-blue);
+    border-color: var(--primary-blue);
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+    .create-nft-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .preview-card {
+        position: relative;
+        top: 0;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .create-nft-grid {
+        grid-template-columns: 1fr;
+    }

@@ -1,0 +1,34 @@
+.my-nfts-page {
+    min-height: calc(100vh - var(--header-height));
+    padding: var(--spacing-2xl) 0;
+}
+
+.my-nfts-page h1 {
+    margin-bottom: var(--spacing-xl);
+}
+
+.my-nfts-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+}
+
+@media (max-width: 1200px) {
+    .my-nfts-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .my-nfts-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .my-nfts-grid {
+        grid-template-columns: 1fr;
+    }
+}

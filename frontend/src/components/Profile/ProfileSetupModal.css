@@ -1,0 +1,69 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.profile-setup-modal {
+    max-width: 500px;
+    width: 90%;
+    padding: var(--spacing-xl);
+}
+
+.profile-setup-modal h2 {
+    margin-bottom: var(--spacing-sm);
+    text-align: center;
+}
+
+.profile-setup-modal p {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xl);
+}
+
+.profile-setup-modal .form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.profile-setup-modal .form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-primary);
+}
+
+.profile-setup-modal .form-group input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    transition: border-color var(--transition-fast);
+}
+
+.profile-setup-modal .form-group input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+}
+
+.profile-setup-modal .form-group small {
+    display: block;
+    margin-top: var(--spacing-xs);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.modal-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+}

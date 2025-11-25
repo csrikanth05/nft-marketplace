@@ -1,0 +1,50 @@
+.list-nft-modal {
+    max-width: 500px;
+    width: 90%;
+    padding: var(--spacing-xl);
+}
+
+.list-nft-modal h2 {
+    margin-bottom: var(--spacing-sm);
+    text-align: center;
+}
+
+.nft-name {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xl);
+    font-weight: 500;
+}
+
+.list-nft-modal .form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.list-nft-modal .form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-primary);
+}
+
+.list-nft-modal .form-group input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-lg);
+    transition: border-color var(--transition-fast);
+}
+
+.list-nft-modal .form-group input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+}
+
+.list-nft-modal .form-group small {
+    display: block;
+    margin-top: var(--spacing-xs);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
