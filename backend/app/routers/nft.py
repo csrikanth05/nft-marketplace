@@ -5,11 +5,13 @@ from ..schemas.nft import (
     MintNFTResponse,
     NFTDetailsResponse,
     TransferNFTRequest,
-    TransferNFTResponse
+    TransferNFTResponse,
+    ApproveNFTRequest,
+    ApproveNFTResponse
 )
 from ..services.nft_service import nft_service
 
-router = APIRouter(prefix="/nft", tags=["NFT"])
+router = APIRouter(prefix="/nfts", tags=["NFT"])
 
 
 @router.post("/mint", response_model=MintNFTResponse)
@@ -88,6 +90,32 @@ async def transfer_nft(request: TransferNFTRequest):
             token_id=request.token_id,
             from_address=request.from_address,
             to_address=request.to_address
+        )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/approve", response_model=ApproveNFTResponse)
+async def approve_nft(request: ApproveNFTRequest):
+    """
+    Approve an address to transfer an NFT
+    
+    - **to_address**: Address to approve (e.g., marketplace contract)
+    - **token_id**: Token ID to approve
+    - **from_address**: NFT owner address
+    - **private_key**: Private key of the owner
+    """
+    try:
+        tx_hash = nft_service.approve_nft(
+            to_address=request.to_address,
+            token_id=request.token_id,
+            from_address=request.from_address,
+            private_key=request.private_key
+        )
+        return ApproveNFTResponse(
+            transaction_hash=tx_hash,
+            token_id=request.token_id,
+            approved_address=request.to_address
         )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

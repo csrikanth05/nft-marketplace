@@ -105,6 +105,23 @@ class NFTService:
         
         return web3_service.send_transaction(transaction, private_key)
     
+    def approve_nft(
+        self,
+        to_address: str,
+        token_id: int,
+        from_address: str,
+        private_key: str
+    ) -> str:
+        """Approve an address to transfer an NFT"""
+        transaction = self.contract.functions.approve(
+            Web3.to_checksum_address(to_address),
+            token_id
+        ).build_transaction({
+            'from': Web3.to_checksum_address(from_address)
+        })
+        
+        return web3_service.send_transaction(transaction, private_key)
+    
     def get_total_supply(self) -> int:
         """Get total number of minted NFTs"""
         return self.contract.functions.getCurrentTokenId().call()

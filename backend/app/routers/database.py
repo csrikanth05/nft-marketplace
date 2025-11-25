@@ -59,7 +59,8 @@ async def get_nfts_by_owner(
     
     - **address**: Wallet address of the owner
     """
-    nfts = db.query(NFT).filter(NFT.owner_address == address).all()
+    from sqlalchemy import func
+    nfts = db.query(NFT).filter(func.lower(NFT.owner_address) == address.lower()).all()
     return nfts
 
 

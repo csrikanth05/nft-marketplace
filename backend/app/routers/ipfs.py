@@ -1,5 +1,6 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from typing import Optional
+import json
 from ..services.ipfs_service import ipfs_service
 from ..schemas.ipfs import (
     ImageUploadResponse,
@@ -80,8 +81,12 @@ async def upload_metadata(request: MetadataUploadRequest):
 @router.post("/upload-nft", response_model=NFTBundleResponse)
 async def upload_nft_bundle(
     file: UploadFile = File(...),
-    name: str = None,
-    description: str = None
+    name: str = Form(...),
+    description: str = Form(...),
+    category: str = Form(None),
+    external_url: str = Form(None),
+    collection: str = Form(None),
+    attributes: str = Form(None)  # JSON string of attributes
 ):
     """
     Upload a complete NFT: image + metadata in one request.
@@ -89,22 +94,35 @@ async def upload_nft_bundle(
     - **file**: Image file
     - **name**: NFT name (form field)
     - **description**: NFT description (form field)
+    - **category**: NFT category (optional)
+    - **external_url**: External link (optional)
+    - **collection**: Collection name (optional)
+    - **attributes**: JSON array of attributes (optional)
     
     Returns both image and metadata IPFS hashes. Use `token_uri` for minting.
     """
     try:
-        if not name or not description:
-            raise HTTPException(status_code=400, detail="Name and description are required")
-        
         # Upload image
         image_content = await file.read()
         image_result = ipfs_service.upload_file(image_content, file.filename)
+        
+        # Parse attributes if provided
+        parsed_attributes = None
+        if attributes:
+            try:
+                parsed_attributes = json.loads(attributes)
+            except:
+                pass
         
         # Upload metadata
         metadata_result = ipfs_service.upload_nft_metadata(
             name=name,
             description=description,
-            image_ipfs_hash=image_result['ipfs_hash']
+            image_ipfs_hash=image_result['ipfs_hash'],
+            attributes=parsed_attributes,
+            category=category,
+            external_url=external_url,
+            collection=collection
         )
         
         return NFTBundleResponse(

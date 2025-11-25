@@ -39,3 +39,16 @@ class TransferNFTResponse(BaseModel):
     token_id: int
     from_address: str
     to_address: str
+
+
+class ApproveNFTRequest(BaseModel):
+    to_address: str = Field(..., description="Address to approve (e.g., marketplace)")
+    token_id: int = Field(..., description="Token ID to approve")
+    from_address: str = Field(..., description="NFT owner address")
+    private_key: str = Field(..., description="Private key for signing")
+
+
+class ApproveNFTResponse(BaseModel):
+    transaction_hash: str
+    token_id: int
+    approved_address: str
