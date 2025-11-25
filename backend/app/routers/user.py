@@ -10,11 +10,15 @@ router = APIRouter(prefix="/users", tags=["User Profiles"])
 
 class ProfileUpdateRequest(BaseModel):
     username: str
+    avatar: str | None = None
+    email: str | None = None
     
     class Config:
         json_schema_extra = {
             "example": {
-                "username": "CryptoCollector"
+                "username": "CryptoCollector",
+                "avatar": "😀",
+                "email": "user@example.com"
             }
         }
 
@@ -22,6 +26,8 @@ class ProfileUpdateRequest(BaseModel):
 class ProfileResponse(BaseModel):
     address: str
     username: str | None = None
+    avatar: str | None = None
+    email: str | None = None
     
     class Config:
         from_attributes = True
@@ -38,6 +44,8 @@ async def create_or_update_profile(
     
     - **address**: Wallet address
     - **username**: Display name for the user
+    - **avatar**: Avatar emoji identifier
+    - **email**: User email address
     """
     # Check if user exists (case-insensitive)
     user = db.query(User).filter(func.lower(User.address) == address.lower()).first()
@@ -45,11 +53,17 @@ async def create_or_update_profile(
     if user:
         # Update existing user
         user.username = request.username
+        if request.avatar is not None:
+            user.avatar = request.avatar
+        if request.email is not None:
+            user.email = request.email
     else:
         # Create new user
         user = User(
             address=address.lower(),
-            username=request.username
+            username=request.username,
+            avatar=request.avatar,
+            email=request.email
         )
         db.add(user)
     
@@ -58,7 +72,9 @@ async def create_or_update_profile(
     
     return ProfileResponse(
         address=user.address,
-        username=user.username
+        username=user.username,
+        avatar=user.avatar,
+        email=user.email
     )
 
 
@@ -76,9 +92,11 @@ async def get_user_profile(
     
     if not user:
         # Return address without username if user doesn't exist
-        return ProfileResponse(address=address.lower(), username=None)
+        return ProfileResponse(address=address.lower(), username=None, avatar=None, email=None)
     
     return ProfileResponse(
         address=user.address,
-        username=user.username
+        username=user.username,
+        avatar=user.avatar,
+        email=user.email
     )

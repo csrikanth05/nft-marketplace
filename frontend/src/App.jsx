@@ -8,6 +8,7 @@ import CreateNFT from './pages/CreateNFT';
 import MyNFTs from './pages/MyNFTs';
 import Auctions from './pages/Auctions';
 import NFTDetail from './pages/NFTDetail';
+import Profile from './pages/Profile';
 import './App.css';
 
 function App() {
@@ -45,11 +46,21 @@ function App() {
         }
     };
 
+    const disconnectWallet = () => {
+        setAccount(null);
+        // Clear any cached data
+        localStorage.removeItem('walletConnected');
+    };
+
     return (
         <Router>
             <ProfileProvider account={account}>
                 <div className="app">
-                    <Header account={account} connectWallet={connectWallet} />
+                    <Header
+                        account={account}
+                        connectWallet={connectWallet}
+                        disconnectWallet={disconnectWallet}
+                    />
                     <ProfileSetupModal />
                     <main className="main-content">
                         <Routes>
@@ -58,6 +69,7 @@ function App() {
                             <Route path="/my-nfts" element={<MyNFTs account={account} />} />
                             <Route path="/auctions" element={<Auctions />} />
                             <Route path="/nft/:tokenId" element={<NFTDetail account={account} />} />
+                            <Route path="/profile" element={<Profile account={account} />} />
                         </Routes>
                     </main>
                 </div>

@@ -32,6 +32,13 @@ class Settings(BaseSettings):
     PINATA_JWT: str = ""
     PINATA_GATEWAY: str = "https://gateway.pinata.cloud/ipfs/"
     
+    # Email Configuration (Optional - for notifications)
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    FROM_EMAIL: str = ""
+    
     @property
     def allowed_origins_list(self) -> List[str]:
         return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",")]

@@ -3,32 +3,87 @@
     padding: var(--spacing-2xl) 0;
 }
 
-.my-nfts-page h1 {
-    margin-bottom: var(--spacing-xl);
-}
-
-.my-nfts-grid {
+.nft-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: var(--spacing-lg);
     margin-top: var(--spacing-xl);
 }
 
+.empty-message {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-top: var(--spacing-2xl);
+}
+
+/* Mint NFT Card */
+.mint-nft-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    background: linear-gradient(135deg, var(--light-blue) 0%, white 100%);
+    border: 2px dashed var(--primary-blue);
+    cursor: pointer;
+    text-align: center;
+    min-height: 300px;
+    transition: all var(--transition-fast);
+}
+
+.mint-nft-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--secondary-purple);
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-purple) 100%);
+}
+
+.mint-nft-card:hover * {
+    color: white;
+}
+
+.mint-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.mint-nft-card h3 {
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--text-primary);
+    font-size: var(--font-size-lg);
+}
+
+.mint-nft-card p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.mint-arrow {
+    font-size: 2rem;
+    margin-top: var(--spacing-md);
+    color: var(--primary-blue);
+    transition: transform var(--transition-fast);
+}
+
+.mint-nft-card:hover .mint-arrow {
+    transform: translateX(8px);
+}
+
+/* Responsive */
 @media (max-width: 1200px) {
-    .my-nfts-grid {
+    .nft-grid {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
 @media (max-width: 768px) {
-    .my-nfts-grid {
+    .nft-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-md);
     }
 }
 
 @media (max-width: 480px) {
-    .my-nfts-grid {
+    .nft-grid {
         grid-template-columns: 1fr;
     }
 }

@@ -1,27 +1,27 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MyNFTCard from '../components/NFT/MyNFTCard';
 import ListNFTModal from '../components/NFT/ListNFTModal';
-import { getUserNFTs } from '../services/api';
+import Card from '../components/UI/Card';
 import './MyNFTs.css';
 
 export default function MyNFTs({ account }) {
+    const navigate = useNavigate();
     const [nfts, setNfts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedNFT, setSelectedNFT] = useState(null);
 
     useEffect(() => {
         if (account) {
-            loadMyNFTs();
-        } else {
-            setLoading(false);
+            loadNFTs();
         }
     }, [account]);
 
-    const loadMyNFTs = async () => {
+    const loadNFTs = async () => {
         try {
-            const response = await getUserNFTs(account.toLowerCase());
-            console.log('My NFTs response:', response.data);
-            setNfts(response.data);
+            const response = await fetch(`http://localhost:8000/api/v1/db/users/${account}/nfts`);
+            const data = await response.json();
+            setNfts(data);
         } catch (error) {
             console.error('Error loading NFTs:', error);
         } finally {
@@ -29,23 +29,16 @@ export default function MyNFTs({ account }) {
         }
     };
 
-    const handleListNFT = (nft) => {
-        setSelectedNFT(nft);
-    };
-
     const handleListSuccess = () => {
-        // Reload NFTs to get updated listing status
-        loadMyNFTs();
+        setSelectedNFT(null);
+        loadNFTs();
     };
 
     if (!account) {
         return (
             <div className="my-nfts-page">
                 <div className="container">
-                    <div className="empty-state">
-                        <h2>Connect Your Wallet</h2>
-                        <p>Please connect your wallet to view your NFTs</p>
-                    </div>
+                    <h2>Please connect your wallet to view your NFTs</h2>
                 </div>
             </div>
         );
@@ -58,20 +51,30 @@ export default function MyNFTs({ account }) {
 
                 {loading ? (
                     <div className="spinner"></div>
-                ) : nfts.length === 0 ? (
-                    <div className="empty-state">
-                        <p>You don't have any NFTs yet</p>
-                    </div>
                 ) : (
-                    <div className="my-nfts-grid">
+                    <div className="nft-grid">
+                        {/* Mint NFT Card */}
+                        <Card hover className="mint-nft-card" onClick={() => navigate('/create')}>
+                            <div className="mint-icon">✨</div>
+                            <h3>Mint a new NFT</h3>
+                            <p>Create and mint your own NFT</p>
+                            <div className="mint-arrow">→</div>
+                        </Card>
+
+                        {/* User's NFTs */}
                         {nfts.map((nft) => (
                             <MyNFTCard
-                                key={nft.token_id}
+                                key={nft.id}
                                 nft={nft}
-                                onList={handleListNFT}
+                                account={account}
+                                onListClick={() => setSelectedNFT(nft)}
                             />
                         ))}
                     </div>
+                )}
+
+                {nfts.length === 0 && !loading && (
+                    <p className="empty-message">You don't own any NFTs yet. Start by minting one!</p>
                 )}
             </div>
 

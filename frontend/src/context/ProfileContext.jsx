@@ -30,8 +30,8 @@ export const ProfileProvider = ({ children, account }) => {
             const response = await axios.get(`http://localhost:8000/api/v1/users/${address}/profile`);
             setProfile(response.data);
 
-            // Show setup modal if no username set
-            if (!response.data.username) {
+            // Show setup modal if username, avatar, or email is not set
+            if (!response.data.username || !response.data.avatar || !response.data.email) {
                 setShowSetupModal(true);
             }
         } catch (error) {
@@ -41,13 +41,17 @@ export const ProfileProvider = ({ children, account }) => {
         }
     };
 
-    const updateProfile = async (username) => {
+    const updateProfile = async (username, avatar, email) => {
         if (!account) return;
 
         try {
             const response = await axios.post(
                 `http://localhost:8000/api/v1/users/profile?address=${account}`,
-                { username }
+                {
+                    username,
+                    avatar,
+                    email
+                }
             );
             setProfile(response.data);
             setShowSetupModal(false);
