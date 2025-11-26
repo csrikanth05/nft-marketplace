@@ -112,8 +112,6 @@ export default function CreateNFT({ account }) {
     return (
         <div className="create-nft-page">
             <div className="container">
-                <h1>Create New NFT</h1>
-
                 <div className="create-nft-grid">
                     <Card className="preview-card">
                         <h3>Preview</h3>
@@ -129,13 +127,14 @@ export default function CreateNFT({ account }) {
                     <Card>
                         <form onSubmit={handleSubmit} className="create-nft-form">
                             <div className="form-group">
-                                <label>Image *</label>
+                                <label>NFT File *</label>
                                 <input
                                     type="file"
-                                    accept="image/*"
+                                    accept="image/*,video/*,audio/*,.glb,.gltf"
                                     onChange={handleImageChange}
                                     required
                                 />
+                                <small>Supported: Images, Videos, Audio, 3D Models (GLB/GLTF)</small>
                             </div>
 
                             <div className="form-group">
@@ -247,7 +246,7 @@ export default function CreateNFT({ account }) {
                                 <small>500 = 5%, 1000 = 10%</small>
                             </div>
 
-                            <Button type="submit" disabled={loading} size="lg">
+                            <Button type="submit" disabled={loading} size="md">
                                 {loading ? 'Creating...' : 'Create NFT'}
                             </Button>
                         </form>

@@ -90,6 +90,24 @@ class Bid(Base):
     bidder_user = relationship("User", back_populates="bids")
 
 
+class Transaction(Base):
+    __tablename__ = "transactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    transaction_hash = Column(String, index=True)
+    nft_id = Column(Integer, ForeignKey("nfts.id"))
+    buyer_address = Column(String, ForeignKey("users.address"))
+    seller_address = Column(String, ForeignKey("users.address"))
+    price_eth = Column(Float)
+    gas_fee_eth = Column(Float, nullable=True)
+    timestamp = Column(BigInteger)
+    transaction_type = Column(String)  # 'buy', 'sell', 'mint'
+    
+    nft = relationship("NFT")
+    buyer = relationship("User", foreign_keys=[buyer_address])
+    seller = relationship("User", foreign_keys=[seller_address])
+
+
 class EventProcessed(Base):
     __tablename__ = "events_processed"
 

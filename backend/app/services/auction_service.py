@@ -1,5 +1,6 @@
 from web3 import Web3
 from .web3_service import web3_service
+from ..config import settings
 from typing import List, Dict, Any
 
 
@@ -21,6 +22,36 @@ class AuctionService:
         """Create a new auction"""
         reserve_price_wei = self.w3.to_wei(reserve_price_eth, 'ether')
         
+        # Check if auction contract is approved to transfer this NFT
+        # We use the NFT contract from web3_service (assuming it's the platform's NFT)
+        # If supporting external NFTs, we'd need to load that contract ABI dynamically
+        nft_contract = web3_service.nft_contract
+        auction_contract_address = settings.AUCTION_CONTRACT_ADDRESS
+        
+        # Check current approval
+        approved_address = nft_contract.functions.getApproved(token_id).call()
+        is_approved_for_all = nft_contract.functions.isApprovedForAll(
+            Web3.to_checksum_address(from_address),
+            Web3.to_checksum_address(auction_contract_address)
+        ).call()
+        
+        if approved_address != auction_contract_address and not is_approved_for_all:
+            # Need to approve
+            print(f"Approving Auction contract for token {token_id}...")
+            approve_txn = nft_contract.functions.approve(
+                Web3.to_checksum_address(auction_contract_address),
+                token_id
+            ).build_transaction({
+                'from': Web3.to_checksum_address(from_address)
+            })
+            
+            # Send approval transaction
+            approve_hash = web3_service.send_transaction(approve_txn, private_key)
+            
+            # Wait for approval to be mined
+            self.w3.eth.wait_for_transaction_receipt(approve_hash)
+            print(f"Approval confirmed: {approve_hash}")
+
         transaction = self.contract.functions.createAuction(
             Web3.to_checksum_address(nft_contract_address),
             token_id,

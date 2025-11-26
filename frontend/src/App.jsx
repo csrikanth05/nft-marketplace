@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import CreateNFT from './pages/CreateNFT';
 import MyNFTs from './pages/MyNFTs';
 import Auctions from './pages/Auctions';
+import AuctionDetail from './pages/AuctionDetail';
 import NFTDetail from './pages/NFTDetail';
 import Profile from './pages/Profile';
 import './App.css';
@@ -67,7 +68,8 @@ function App() {
                             <Route path="/" element={<Home />} />
                             <Route path="/create" element={<CreateNFT account={account} />} />
                             <Route path="/my-nfts" element={<MyNFTs account={account} />} />
-                            <Route path="/auctions" element={<Auctions />} />
+                            <Route path="/auctions" element={<Auctions account={account} />} />
+                            <Route path="/auction/:id" element={<AuctionDetail account={account} />} />
                             <Route path="/nft/:tokenId" element={<NFTDetail account={account} />} />
                             <Route path="/profile" element={<Profile account={account} />} />
                         </Routes>

@@ -18,7 +18,7 @@ class ListNFTResponse(BaseModel):
 
 
 class BuyNFTRequest(BaseModel):
-    listing_id: int = Field(..., description="Listing ID to purchase")
+    listing_id: Optional[int] = Field(None, description="Listing ID to purchase (optional if passed in URL)")
     from_address: str = Field(..., description="Buyer address")
     private_key: str = Field(..., description="Private key for signing")
 

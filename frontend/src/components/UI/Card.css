@@ -6,6 +6,10 @@
     transition: all var(--transition-base);
 }
 
+.card-hover {
+    cursor: pointer;
+}
+
 .card-hover:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-xl);

@@ -1,5 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
 from typing import List
+import time
 from ..schemas.marketplace import (
     ListNFTRequest,
     ListNFTResponse,
@@ -9,6 +11,9 @@ from ..schemas.marketplace import (
     CancelListingRequest
 )
 from ..services.marketplace_service import marketplace_service
+from ..services.email_service import email_service
+from ..database import get_db
+from ..models.models import User, Transaction, NFT, Listing
 
 router = APIRouter(prefix="/marketplace", tags=["Marketplace"])
 
@@ -40,7 +45,11 @@ async def list_nft(request: ListNFTRequest):
 
 
 @router.post("/buy/{listing_id}", response_model=BuyNFTResponse)
-async def buy_nft(listing_id: int, request: BuyNFTRequest):
+async def buy_nft(
+    listing_id: int, 
+    request: BuyNFTRequest,
+    db: Session = Depends(get_db)
+):
     """
     Buy a listed NFT
     
@@ -51,12 +60,117 @@ async def buy_nft(listing_id: int, request: BuyNFTRequest):
     The transaction will include the listing price plus gas fees
     """
     try:
-        tx_hash = marketplace_service.buy_nft(
+        result = marketplace_service.buy_nft(
             listing_id=listing_id,
             from_address=request.from_address,
             private_key=request.private_key
         )
-        return BuyNFTResponse(transaction_hash=tx_hash, listing_id=listing_id)
+        
+        # Record transaction in database
+        try:
+            new_transaction = Transaction(
+                transaction_hash=result["transaction_hash"],
+                nft_id=listing_id, # Note: listing_id is passed, but we need nft_id. 
+                           # Wait, listing_id is the ID of the listing.
+                           # The Transaction model has nft_id.
+                           # result has token_id and nft_contract.
+                           # We need to find the NFT record in DB to get its ID.
+            )
+            # Actually, let's look at the Transaction model.
+            # nft_id = Column(Integer, ForeignKey("nfts.id"))
+            # We need the internal DB ID of the NFT.
+            
+            # Fetch the listing to get the NFT ID
+            # We can use the listing_id (which is the on-chain ID) to find the Listing record in DB?
+            # Or we can find the NFT by contract and token_id.
+            
+            nft = db.query(NFT).filter(
+                NFT.contract_address == result["nft_contract"],
+                NFT.token_id == result["token_id"]
+            ).first()
+            
+            if nft:
+                new_transaction = Transaction(
+                    transaction_hash=result["transaction_hash"],
+                    nft_id=nft.id,
+                    buyer_address=request.from_address,
+                    seller_address=result["seller_address"],
+                    price_eth=result["price_eth"],
+                    gas_fee_eth=result["gas_fee_eth"],
+                    timestamp=int(time.time()),
+                    transaction_type='buy'
+                )
+                db.add(new_transaction)
+                
+                # Update NFT owner and clear listing
+                nft.owner_address = request.from_address
+                nft.is_listed = False
+                
+                # Also update the Listing record if it exists
+                db_listing = db.query(Listing).filter(Listing.listing_id == listing_id).first()
+                if db_listing:
+                    db_listing.active = False
+                    db_listing.sold = True
+                
+                db.commit()
+            else:
+                print(f"NFT not found in DB for transaction recording: {result['nft_contract']} #{result['token_id']}")
+
+        except Exception as e:
+            print(f"Failed to record transaction: {e}")
+            db.rollback()
+
+        # Send email notifications
+        try:
+            # Fetch buyer and seller details
+            buyer = db.query(User).filter(User.address == request.from_address).first()
+            seller = db.query(User).filter(User.address == result["seller_address"]).first()
+            
+            nft_name = f"NFT #{result['token_id']}"
+            price_eth = result["price_eth"]
+            tx_hash = result["transaction_hash"]
+            
+            # Send email to buyer
+            if buyer and buyer.email:
+                email_service.send_nft_bought_email(
+                    to_email=buyer.email,
+                    username=buyer.username or "User",
+                    nft_name=nft_name,
+                    price_eth=price_eth,
+                    tx_hash=tx_hash
+                )
+                
+            # Send email to seller
+            if seller and seller.email:
+                email_service.send_nft_sold_email(
+                    to_email=seller.email,
+                    username=seller.username or "User",
+                    nft_name=nft_name,
+                    price_eth=price_eth,
+                    tx_hash=tx_hash
+                )
+        except Exception as e:
+            # Don't fail the request if email sending fails
+            print(f"Failed to send email notifications: {e}")
+            
+        return BuyNFTResponse(
+            transaction_hash=result["transaction_hash"], 
+            listing_id=listing_id
+        )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/estimate-gas/buy/{listing_id}")
+async def estimate_buy_gas(listing_id: int, from_address: str):
+    """
+    Estimate gas fee for buying an NFT
+    
+    Returns estimated gas fee in ETH
+    """
+    try:
+        gas_fee = marketplace_service.estimate_buy_gas(listing_id, from_address)
+        return {"gas_fee_eth": gas_fee}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

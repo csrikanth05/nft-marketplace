@@ -49,13 +49,13 @@
 .create-nft-form {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-lg);
+    gap: var(--spacing-xs);
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-xxs);
 }
 
 .form-group label {
@@ -170,8 +170,8 @@
     }
 }
 
-
 @media (max-width: 768px) {
     .create-nft-grid {
         grid-template-columns: 1fr;
     }
+}

@@ -20,7 +20,6 @@ class CreateAuctionResponse(BaseModel):
 
 
 class PlaceBidRequest(BaseModel):
-    auction_id: int = Field(..., description="Auction ID")
     bid_amount_eth: float = Field(..., gt=0, description="Bid amount in ETH")
     from_address: str = Field(..., description="Bidder address")
     private_key: str = Field(..., description="Private key for signing")
@@ -49,12 +48,10 @@ class AuctionDetailsResponse(BaseModel):
 
 
 class EndAuctionRequest(BaseModel):
-    auction_id: int
     from_address: str
     private_key: str
 
 
 class WithdrawBidRequest(BaseModel):
-    auction_id: int
     from_address: str
     private_key: str

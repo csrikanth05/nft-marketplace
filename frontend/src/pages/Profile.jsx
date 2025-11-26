@@ -1,6 +1,7 @@
 import { useProfile } from '../context/ProfileContext';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
+import TransactionHistory from '../components/Profile/TransactionHistory';
 import './Profile.css';
 
 export default function Profile({ account }) {
@@ -64,6 +65,8 @@ export default function Profile({ account }) {
                         </Button>
                     </div>
                 </Card>
+
+                <TransactionHistory address={account} />
             </div>
         </div>
     );

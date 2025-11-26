@@ -46,7 +46,7 @@ class MarketplaceService:
         listing_id: int,
         from_address: str,
         private_key: str
-    ) -> str:
+    ) -> Dict[str, Any]:
         """Buy a listed NFT"""
         # Get listing details to know the price
         listing = self.get_listing(listing_id)
@@ -59,7 +59,41 @@ class MarketplaceService:
             'value': int(listing['price_wei'])
         })
         
-        return web3_service.send_transaction(transaction, private_key)
+        tx_hash = web3_service.send_transaction(transaction, private_key)
+        
+        # Wait for receipt to get gas used
+        receipt = self.w3.eth.wait_for_transaction_receipt(tx_hash)
+        gas_used = receipt['gasUsed']
+        effective_gas_price = receipt['effectiveGasPrice']
+        gas_fee_eth = self.w3.from_wei(gas_used * effective_gas_price, 'ether')
+        
+        return {
+            "transaction_hash": tx_hash,
+            "gas_fee_eth": float(gas_fee_eth),
+            "price_eth": listing['price_eth'],
+            "seller_address": listing['seller'],
+            "nft_contract": listing['nft_contract'],
+            "token_id": listing['token_id']
+        }
+
+    def estimate_buy_gas(self, listing_id: int, from_address: str) -> float:
+        """Estimate gas fee for buying an NFT"""
+        listing = self.get_listing(listing_id)
+        if not listing['active']:
+            raise ValueError("Listing is not active")
+
+        # Estimate gas
+        gas_estimate = self.contract.functions.buyNFT(listing_id).estimate_gas({
+            'from': Web3.to_checksum_address(from_address),
+            'value': int(listing['price_wei'])
+        })
+        
+        # Get current gas price
+        gas_price = self.w3.eth.gas_price
+        
+        # Calculate fee in ETH
+        fee_wei = gas_estimate * gas_price
+        return float(self.w3.from_wei(fee_wei, 'ether'))
     
     def cancel_listing(
         self,

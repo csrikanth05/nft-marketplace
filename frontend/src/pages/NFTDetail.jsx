@@ -5,6 +5,8 @@ import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
 import DisplayName from '../components/UI/DisplayName';
 import ListNFTModal from '../components/NFT/ListNFTModal';
+import BuyNFTModal from '../components/NFT/BuyNFTModal';
+import CreateAuctionModal from '../components/Auction/CreateAuctionModal';
 import './NFTDetail.css';
 
 const IPFS_GATEWAY = 'https://ipfs.io/ipfs/';
@@ -19,7 +21,10 @@ export default function NFTDetail({ account }) {
     const [imageUrl, setImageUrl] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showListModal, setShowListModal] = useState(false);
+    const [showBuyModal, setShowBuyModal] = useState(false);
+    const [showAuctionModal, setShowAuctionModal] = useState(false);
     const [creationDate, setCreationDate] = useState(null);
+    const [listing, setListing] = useState(null);
 
     useEffect(() => {
         loadNFTDetails();
@@ -42,13 +47,14 @@ export default function NFTDetail({ account }) {
                 try {
                     const listingsResponse = await fetch('http://localhost:8000/api/v1/db/listings?active_only=true');
                     const listings = await listingsResponse.json();
-                    const listing = listings.find(l => l.nft && l.nft.token_id === parseInt(tokenId));
-                    if (listing) {
+                    const foundListing = listings.find(l => l.nft && l.nft.token_id === parseInt(tokenId));
+                    if (foundListing) {
+                        setListing(foundListing);
                         // Add listing data to NFT
                         setNft(prev => ({
                             ...prev,
-                            price_eth: listing.price_eth,
-                            listing_id: listing.listing_id
+                            price_eth: foundListing.price_eth,
+                            listing_id: foundListing.listing_id
                         }));
                     }
                 } catch (err) {
@@ -76,36 +82,10 @@ export default function NFTDetail({ account }) {
         }
     };
 
-    const handleBuyNFT = async () => {
-        if (!account) {
-            alert('Please connect your wallet to buy NFTs');
-            return;
-        }
-
-        const privateKey = prompt('Enter your private key to buy NFT:');
-        if (!privateKey) return;
-
-        try {
-            const response = await fetch(`http://localhost:8000/api/v1/marketplace/buy/${nft.listing_id}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    from_address: account,
-                    private_key: privateKey
-                })
-            });
-
-            if (response.ok) {
-                alert('NFT purchased successfully!');
-                navigate('/my-nfts');
-            } else {
-                const error = await response.json();
-                alert('Failed to buy NFT: ' + (error.detail || 'Unknown error'));
-            }
-        } catch (error) {
-            console.error('Error buying NFT:', error);
-            alert('Failed to buy NFT: ' + error.message);
-        }
+    const handleBuySuccess = () => {
+        setShowBuyModal(false);
+        // Reload NFT details to show updated ownership
+        loadNFTDetails();
     };
 
     const formatDate = (date) => {
@@ -180,12 +160,24 @@ export default function NFTDetail({ account }) {
                                 {metadata?.collection && (
                                     <span className="collection-name">{metadata.collection}</span>
                                 )}
-                                <h1>{metadata?.name || `NFT #${tokenId}`}</h1>
+                                <div className="title-row">
+                                    <h1>{metadata?.name || `NFT #${tokenId}`}</h1>
+                                    {!isOwner && listing && (
+                                        <Button size="md" onClick={() => setShowBuyModal(true)} className="header-buy-btn">
+                                            Buy Now
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                             {isOwner && !nft.is_listed && (
-                                <Button onClick={() => setShowListModal(true)}>
-                                    List for Sale
-                                </Button>
+                                <div className="owner-actions">
+                                    <Button onClick={() => setShowListModal(true)}>
+                                        List for Sale
+                                    </Button>
+                                    <Button variant="secondary" onClick={() => setShowAuctionModal(true)}>
+                                        Create Auction
+                                    </Button>
+                                </div>
                             )}
                         </div>
 
@@ -214,11 +206,6 @@ export default function NFTDetail({ account }) {
                                     <span className="price-label">Current Price</span>
                                     <span className="price-value-small">{nft.price_eth} ETH</span>
                                 </div>
-                                {!isOwner && (
-                                    <Button size="lg" onClick={handleBuyNFT}>
-                                        Buy Now
-                                    </Button>
-                                )}
                                 {isOwner && (
                                     <div className="owner-notice">
                                         You own this NFT (Listed for sale)
@@ -309,6 +296,28 @@ export default function NFTDetail({ account }) {
                     onClose={() => setShowListModal(false)}
                     onSuccess={() => {
                         setShowListModal(false);
+                        loadNFTDetails();
+                    }}
+                />
+            )}
+
+            {showBuyModal && listing && (
+                <BuyNFTModal
+                    nft={{ ...nft, token_id: parseInt(tokenId), name: metadata?.name, image_url: imageUrl }}
+                    listing={listing}
+                    account={account}
+                    onClose={() => setShowBuyModal(false)}
+                    onSuccess={handleBuySuccess}
+                />
+            )}
+
+            {showAuctionModal && (
+                <CreateAuctionModal
+                    nft={{ ...nft, token_id: parseInt(tokenId), name: metadata?.name }}
+                    account={account}
+                    onClose={() => setShowAuctionModal(false)}
+                    onSuccess={() => {
+                        setShowAuctionModal(false);
                         loadNFTDetails();
                     }}
                 />

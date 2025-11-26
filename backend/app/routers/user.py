@@ -100,3 +100,63 @@ async def get_user_profile(
         avatar=user.avatar,
         email=user.email
     )
+
+
+class TransactionResponse(BaseModel):
+    id: int
+    transaction_hash: str
+    nft_id: int
+    nft_name: str | None = None
+    nft_image: str | None = None
+    buyer_address: str | None
+    seller_address: str | None
+    price_eth: float
+    gas_fee_eth: float | None
+    timestamp: int
+    transaction_type: str
+    
+    class Config:
+        from_attributes = True
+
+
+@router.get("/{address}/transactions", response_model=list[TransactionResponse])
+async def get_user_transactions(
+    address: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Get all transactions for a specific user (buy, sell, mint)
+    """
+    from ..models.models import Transaction, NFT
+    from sqlalchemy import or_
+
+    transactions = db.query(Transaction).join(NFT).filter(
+        or_(
+            func.lower(Transaction.buyer_address) == address.lower(),
+            func.lower(Transaction.seller_address) == address.lower()
+        )
+    ).order_by(Transaction.timestamp.desc()).all()
+    
+    result = []
+    for tx in transactions:
+        # Get NFT details
+        nft = db.query(NFT).filter(NFT.id == tx.nft_id).first()
+        
+        # Determine NFT name/image (this would ideally come from metadata, but we'll use placeholders or what we have)
+        # In a real app, we'd fetch metadata from token_uri
+        
+        result.append(TransactionResponse(
+            id=tx.id,
+            transaction_hash=tx.transaction_hash,
+            nft_id=tx.nft_id,
+            nft_name=f"NFT #{nft.token_id}" if nft else "Unknown NFT",
+            nft_image=None, # We'd need to fetch this from metadata
+            buyer_address=tx.buyer_address,
+            seller_address=tx.seller_address,
+            price_eth=tx.price_eth,
+            gas_fee_eth=tx.gas_fee_eth,
+            timestamp=tx.timestamp,
+            transaction_type=tx.transaction_type
+        ))
+        
+    return result

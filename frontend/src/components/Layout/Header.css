@@ -1,10 +1,11 @@
 .header {
-    background: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, var(--beige-200) 0%, var(--beige-100) 100%);
+    box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
     position: sticky;
     top: 0;
     z-index: 100;
     height: var(--header-height);
+    border-bottom: 1px solid var(--beige-300);
 }
 
 .header-content {
@@ -22,8 +23,9 @@
 
 .nav a {
     text-decoration: none;
-    color: var(--text-secondary);
-    font-weight: 500;
+    color: var(--dark-blue);
+    font-weight: 600;
+    font-size: var(--font-size-lg);
     transition: color var(--transition-fast);
     position: relative;
 }
@@ -102,9 +104,9 @@
     top: calc(100% + var(--spacing-xs));
     right: 0;
     background: white;
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--beige-300);
     border-radius: var(--radius-md);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
     min-width: 240px;
     overflow: hidden;
     animation: dropdownFadeIn 0.2s ease-out;
@@ -127,8 +129,8 @@
     align-items: center;
     gap: var(--spacing-sm);
     padding: var(--spacing-md);
-    background: linear-gradient(135deg, var(--light-blue) 0%, white 100%);
-    border-bottom: 1px solid var(--gray-200);
+    background: linear-gradient(135deg, var(--beige-200) 0%, var(--beige-100) 100%);
+    border-bottom: 1px solid var(--beige-300);
 }
 
 .user-icon {
@@ -179,7 +181,7 @@
 }
 
 .dropdown-item:hover {
-    background: var(--light-blue);
+    background: var(--beige-100);
 }
 
 .dropdown-icon {
@@ -188,7 +190,7 @@
 
 .dropdown-divider {
     height: 1px;
-    background: var(--gray-200);
+    background: var(--beige-300);
     margin: var(--spacing-xs) 0;
 }
 
