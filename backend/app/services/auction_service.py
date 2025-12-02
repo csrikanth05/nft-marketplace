@@ -20,6 +20,10 @@ class AuctionService:
         private_key: str
     ) -> Dict[str, Any]:
         """Create a new auction"""
+        print(f"\n=== CREATE AUCTION DEBUG ===")
+        print(f"Initial start_time: {start_time}")
+        print(f"Initial end_time: {end_time}")
+        
         reserve_price_wei = self.w3.to_wei(reserve_price_eth, 'ether')
         
         # Check if auction contract is approved to transfer this NFT
@@ -51,7 +55,31 @@ class AuctionService:
             # Wait for approval to be mined
             self.w3.eth.wait_for_transaction_receipt(approve_hash)
             print(f"Approval confirmed: {approve_hash}")
+        
+        # ALWAYS recalculate start_time right before creating auction
+        # This accounts for time passing during approval OR just network delay
+        current_block = self.w3.eth.get_block('latest')
+        current_time = current_block['timestamp']
+        print(f"Current blockchain time: {current_time}")
+        
+        # If start_time is now in the past or doesn't have enough buffer, adjust it
+        # We need a LARGE buffer to account for Ganache's auto-mining behavior
+        min_required_start = current_time + 120  # Increased to 120 seconds
+        print(f"Minimum required start_time: {min_required_start}")
+        
+        if start_time < min_required_start:
+            duration = end_time - start_time
+            start_time = min_required_start
+            end_time = start_time + duration
+            print(f"⚠️  ADJUSTED start_time to {start_time}, end_time to {end_time}")
+        else:
+            print(f"✓ start_time {start_time} is valid (>= {min_required_start})")
+        
+        print(f"Final start_time being sent to contract: {start_time}")
+        print(f"Final end_time being sent to contract: {end_time}")
+        print(f"=== END DEBUG ===\n")
 
+        # Build the transaction with the adjusted times
         transaction = self.contract.functions.createAuction(
             Web3.to_checksum_address(nft_contract_address),
             token_id,
@@ -62,7 +90,22 @@ class AuctionService:
             'from': Web3.to_checksum_address(from_address)
         })
         
+        # Log the transaction data to verify the values
+        print(f"Transaction data check - start_time in tx: {start_time}, end_time in tx: {end_time}")
+        
+        # Get blockchain time right before sending
+        pre_send_block = self.w3.eth.get_block('latest')
+        pre_send_time = pre_send_block['timestamp']
+        print(f"Blockchain time RIGHT before sending tx: {pre_send_time}")
+        print(f"Time difference: start_time - current_time = {start_time - pre_send_time} seconds")
+        
         tx_hash = web3_service.send_transaction(transaction, private_key)
+        
+        # Get blockchain time after transaction is mined
+        post_send_block = self.w3.eth.get_block('latest')
+        post_send_time = post_send_block['timestamp']
+        print(f"Blockchain time AFTER tx mined: {post_send_time}")
+        print(f"Time advanced during mining: {post_send_time - pre_send_time} seconds")
         
         # Get auction ID from event
         receipt = self.w3.eth.get_transaction_receipt(tx_hash)
@@ -165,17 +208,34 @@ class AuctionService:
         return self.contract.functions.getCurrentAuctionId().call()
     
     def get_all_active_auctions(self) -> List[Dict[str, Any]]:
-        """Get all active auctions"""
+        """Get all active auctions (only for NFTs that exist in database)"""
+        from ..database import SessionLocal
+        from ..models.models import NFT
+        
         current_id = self.get_current_auction_id()
         active_auctions = []
         
-        for auction_id in range(1, current_id + 1):
-            try:
-                auction = self.get_auction(auction_id)
-                if auction['active'] and not auction['ended']:
-                    active_auctions.append(auction)
-            except:
-                continue
+        # Get DB session to check NFT existence
+        db = SessionLocal()
+        
+        try:
+            for auction_id in range(1, current_id + 1):
+                try:
+                    auction = self.get_auction(auction_id)
+                    if auction['active'] and not auction['ended']:
+                        # Check if NFT exists in database
+                        nft_exists = db.query(NFT).filter(
+                            NFT.contract_address == auction['nft_contract'],
+                            NFT.token_id == auction['token_id']
+                        ).first()
+                        
+                        # Only include auction if NFT exists in DB
+                        if nft_exists:
+                            active_auctions.append(auction)
+                except:
+                    continue
+        finally:
+            db.close()
         
         return active_auctions
 

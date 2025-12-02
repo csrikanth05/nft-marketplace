@@ -10,6 +10,7 @@ import Auctions from './pages/Auctions';
 import AuctionDetail from './pages/AuctionDetail';
 import NFTDetail from './pages/NFTDetail';
 import Profile from './pages/Profile';
+import CollectionDetail from './pages/CollectionDetail';
 import './App.css';
 
 function App() {
@@ -72,6 +73,7 @@ function App() {
                             <Route path="/auction/:id" element={<AuctionDetail account={account} />} />
                             <Route path="/nft/:tokenId" element={<NFTDetail account={account} />} />
                             <Route path="/profile" element={<Profile account={account} />} />
+                            <Route path="/collection/:collectionId" element={<CollectionDetail account={account} />} />
                         </Routes>
                     </main>
                 </div>

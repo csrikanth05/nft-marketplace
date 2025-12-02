@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
-from .routers import nft, marketplace, auction, database, ipfs, user, email
+from .routers import nft, marketplace, auction, database, ipfs, user, email, collection
 from .services.indexer_service import indexer_service
 import asyncio
 
@@ -36,6 +36,7 @@ app.include_router(database.router, prefix=settings.API_V1_PREFIX)
 app.include_router(ipfs.router, prefix=settings.API_V1_PREFIX)
 app.include_router(user.router, prefix=settings.API_V1_PREFIX)
 app.include_router(email.router, prefix=settings.API_V1_PREFIX)
+app.include_router(collection.router, prefix=settings.API_V1_PREFIX)
 
 
 @app.get("/")

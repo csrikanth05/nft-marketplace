@@ -33,8 +33,8 @@ export default function CreateAuctionModal({ nft, account, onClose, onSuccess })
             const timeResponse = await fetch('http://localhost:8000/api/v1/auction/blockchain-time');
             const { timestamp: blockchainTime } = await timeResponse.json();
 
-            // Set start time to blockchain time + 3 seconds
-            const startTime = blockchainTime + 3;
+            // Set start time to blockchain time + 60 seconds to ensure transaction has time to be mined
+            const startTime = blockchainTime + 60;
             const endTime = startTime + parseInt(formData.duration);
 
             const response = await fetch('http://localhost:8000/api/v1/auction/create', {

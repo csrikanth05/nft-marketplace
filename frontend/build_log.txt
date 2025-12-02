@@ -1,0 +1,15 @@
+
+> frontend@0.0.0 build
+> tsc && vite build
+
+[36mvite v7.2.4 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 10 modules transformed.
+Γ£ù Build failed in 168ms
+error during build:
+Could not resolve "./pages/Home" from "src/App.jsx"
+file: C:/Users/csrik/Desktop/crypto/nft-marketplace/frontend/src/App.jsx
+    at getRollupError (file:///C:/Users/csrik/Desktop/crypto/nft-marketplace/frontend/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///C:/Users/csrik/Desktop/crypto/nft-marketplace/frontend/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at ModuleLoader.handleInvalidResolvedId (file:///C:/Users/csrik/Desktop/crypto/nft-marketplace/frontend/node_modules/rollup/dist/es/shared/node-entry.js:21590:24)
+    at file:///C:/Users/csrik/Desktop/crypto/nft-marketplace/frontend/node_modules/rollup/dist/es/shared/node-entry.js:21550:26

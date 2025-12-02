@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
+import MintNFTModal from '../components/NFT/MintNFTModal';
 import { uploadNFTBundle, mintNFT } from '../services/api';
 import './CreateNFT.css';
 
@@ -19,6 +20,8 @@ export default function CreateNFT({ account }) {
     const [preview, setPreview] = useState(null);
     const [properties, setProperties] = useState([{ trait_type: '', value: '' }]);
     const [loading, setLoading] = useState(false);
+    const [showMintModal, setShowMintModal] = useState(false);
+    const [tokenUri, setTokenUri] = useState(null);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -81,32 +84,32 @@ export default function CreateNFT({ account }) {
             }
 
             const ipfsData = await ipfsResponse.json();
-            const { token_uri } = ipfsData;
+            setTokenUri(ipfsData.token_uri);
 
-            // Mint NFT
-            const privateKey = prompt('Enter your private key to mint NFT:');
-            if (!privateKey) {
-                setLoading(false);
-                return;
-            }
-
-            await mintNFT({
-                to_address: account,
-                token_uri: token_uri,
-                royalty_receiver: account,
-                royalty_fee: parseInt(formData.royaltyFee),
-                from_address: account,
-                private_key: privateKey,
-            });
-
-            alert('NFT minted successfully!');
-            navigate('/my-nfts');
+            // Show mint modal
+            setLoading(false);
+            setShowMintModal(true);
         } catch (error) {
-            console.error('Error creating NFT:', error);
-            alert('Failed to create NFT: ' + (error.response?.data?.detail || error.message));
-        } finally {
+            console.error('Error uploading NFT:', error);
+            alert('Failed to upload NFT: ' + (error.response?.data?.detail || error.message));
             setLoading(false);
         }
+    };
+
+    const handleMint = async (privateKey) => {
+        await mintNFT({
+            to_address: account,
+            token_uri: tokenUri,
+            royalty_receiver: account,
+            royalty_fee: parseInt(formData.royaltyFee),
+            from_address: account,
+            private_key: privateKey,
+        });
+
+        // Navigate will be handled by the modal after showing success
+        setTimeout(() => {
+            navigate('/my-nfts');
+        }, 1000);
     };
 
     return (
@@ -117,7 +120,56 @@ export default function CreateNFT({ account }) {
                         <h3>Preview</h3>
                         <div className="image-preview">
                             {preview ? (
-                                <img src={preview} alt="Preview" />
+                                (() => {
+                                    const fileName = image ? image.name.toLowerCase() : '';
+                                    if (fileName.endsWith('.glb') || fileName.endsWith('.gltf')) {
+                                        return (
+                                            <model-viewer
+                                                src={preview}
+                                                alt="Preview"
+                                                auto-rotate
+                                                camera-controls
+                                                shadow-intensity="1"
+                                                style={{ width: '100%', height: '100%', minHeight: '300px' }}
+                                            ></model-viewer>
+                                        );
+                                    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.webm') || fileName.endsWith('.ogg')) {
+                                        return (
+                                            <video
+                                                src={preview}
+                                                controls
+                                                muted
+                                                loop
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                onTimeUpdate={(e) => {
+                                                    if (e.target.currentTime >= 5) {
+                                                        e.target.pause();
+                                                        e.target.currentTime = 0;
+                                                    }
+                                                }}
+                                            />
+                                        );
+                                    } else if (fileName.endsWith('.mp3') || fileName.endsWith('.wav')) {
+                                        return (
+                                            <div className="audio-preview-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '300px', background: '#f5f5f5' }}>
+                                                <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎵</div>
+                                                <audio
+                                                    src={preview}
+                                                    controls
+                                                    style={{ width: '90%' }}
+                                                    onTimeUpdate={(e) => {
+                                                        if (e.target.currentTime >= 10) {
+                                                            e.target.pause();
+                                                            e.target.currentTime = 0;
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                        );
+                                    } else {
+                                        return <img src={preview} alt="Preview" />;
+                                    }
+                                })()
                             ) : (
                                 <div className="preview-placeholder">Upload an image to see preview</div>
                             )}
@@ -173,6 +225,7 @@ export default function CreateNFT({ account }) {
                                         <option value="Gaming">Gaming</option>
                                         <option value="Sports">Sports</option>
                                         <option value="Collectibles">Collectibles</option>
+                                        <option value="Futuristic">Futuristic</option>
                                         <option value="Utility">Utility</option>
                                         <option value="Other">Other</option>
                                     </select>
@@ -253,6 +306,13 @@ export default function CreateNFT({ account }) {
                     </Card>
                 </div>
             </div>
+
+            <MintNFTModal
+                isOpen={showMintModal}
+                onClose={() => setShowMintModal(false)}
+                onMint={handleMint}
+                loading={loading}
+            />
         </div>
     );
 }

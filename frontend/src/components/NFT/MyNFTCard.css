@@ -85,3 +85,39 @@
     height: 24px;
     animation: spin 1s linear infinite;
 }
+.error-placeholder {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    background-color: var(--error-light);
+    color: var(--error-text);
+}
+
+.retry-button {
+    background: transparent;
+    border: 1px solid currentColor;
+    color: inherit;
+    padding: 4px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.retry-button:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.audio-preview {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--gray-50);
+    gap: var(--spacing-md);
+}
+
+.audio-icon {
+    font-size: 3rem;
+}
